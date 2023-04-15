@@ -89,6 +89,19 @@ def find_rest_in_building(building_num, db):
     should be sorted by their rating from highest to lowest.
     '''
 
+    conn = sqlite3.connect(db)
+    cursor = conn.cursor()
+
+    cursor.execute('''SELECT restaurants.name FROM restaurants JOIN buildings  ON restaurants.building_id = buildings.id WHERE buildings.building = ? ORDER BY restaurants.rating DESC''', (building_num,))
+
+    restaurant_names = []
+    for row in cursor.fetchall():
+        restaurant_names.append(row[0])
+
+    conn.close()
+
+    return restaurant_names
+
     pass
 
 #EXTRA CREDIT
