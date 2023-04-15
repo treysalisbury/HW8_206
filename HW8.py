@@ -1,6 +1,6 @@
-# Your name: 
-# Your student id:
-# Your email:
+# Your name: Trey Salisbury
+# Your student id: 42751347
+# Your email: treys@umich.edu
 # List who you have worked with on this homework:
 
 import matplotlib.pyplot as plt
@@ -15,6 +15,24 @@ def load_rest_data(db):
     and each inner key is a dictionary, where the key:value pairs should be the category, 
     building, and rating for the restaurant.
     """
+
+    conn = sqlite3.connect(db)
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT restaurants.name, categories.category, buildings.building, restaurants.rating FROM restaurants JOIN categories ON restaurants.category_id = categories.id JOIN buildings ON restaurants.building_id = buildings.id')
+
+    return_dict = {}
+    for row in cursor.fetchall():
+        restaurant = row[0]
+        category = row[1]
+        building = row[2]
+        rating = row[3]
+        return_dict[restaurant] = {"category": category, "building": building, "rating": rating}
+
+    conn.close()
+
+    return return_dict
+    
     pass
 
 def plot_rest_categories(db):
@@ -23,6 +41,7 @@ def plot_rest_categories(db):
     restaurant categories and the values should be the number of restaurants in each category. The function should
     also create a bar chart with restaurant categories and the count of number of restaurants in each category.
     """
+
     pass
 
 def find_rest_in_building(building_num, db):
@@ -31,6 +50,7 @@ def find_rest_in_building(building_num, db):
     restaurant names. You need to find all the restaurant names which are in the specific building. The restaurants 
     should be sorted by their rating from highest to lowest.
     '''
+
     pass
 
 #EXTRA CREDIT
@@ -49,6 +69,8 @@ def get_highest_rating(db): #Do this through DB as well
 
 #Try calling your functions here
 def main():
+    load_rest_data('South_U_Restaurants.db')
+
     pass
 
 class TestHW8(unittest.TestCase):
