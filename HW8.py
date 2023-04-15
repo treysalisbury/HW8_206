@@ -116,12 +116,61 @@ def get_highest_rating(db): #Do this through DB as well
     The second bar chart displays the buildings along the y-axis and their ratings along the x-axis 
     in descending order (by rating).
     """
+
+    conn = sqlite3.connect(db)
+    cursor = conn.cursor()
+
+    cursor.execute('''SELECT categories.category, AVG(restaurants.rating) FROM restaurants JOIN categories ON restaurants.category_id = categories.id GROUP BY categories.category ORDER BY AVG(restaurants.rating) DESC LIMIT 1''')
+    highest_category = cursor.fetchone()
+
+    cursor.execute('''SELECT buildings.building, AVG(restaurants.rating) FROM restaurants JOIN buildings ON restaurants.building_id = buildings.id GROUP BY buildings.building ORDER BY AVG(restaurants.rating) DESC LIMIT 1''')
+    highest_building = cursor.fetchone()
+
+    cursor.execute('''SELECT categories.category, AVG(restaurants.rating) FROM restaurants JOIN categories ON restaurants.category_id = categories.id GROUP BY categories.category ORDER BY AVG(restaurants.rating) DESC''')
+    category_ratings = cursor.fetchall()
+
+    categories = []
+    ratings = []
+    for row in category_ratings:
+        categories.append(row[0])
+        ratings.append(row[1])
+        
+    fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
+
+    ax1.barh(categories, ratings)
+    ax1.invert_yaxis()
+    ax1.set_xlabel('Average Rating')
+    ax1.set_ylabel('Category')
+    ax1.set_title('Highest-Rated Restaurant Categories')
+
+    cursor.execute('''SELECT buildings.building, AVG(restaurants.rating) FROM restaurants JOIN buildings ON restaurants.building_id = buildings.id GROUP BY buildings.building ORDER BY AVG(restaurants.rating) DESC''')
+    building_ratings = cursor.fetchall()
+
+    buildings = []
+    bratings = []
+    for row in building_ratings:
+        buildings.append(row[0])
+        bratings.append(row[1])
+
+    ax2.barh(buildings, bratings)
+    ax2.invert_yaxis()
+    ax2.set_xlabel('Average Rating')
+    ax2.set_ylabel('Building')
+    ax2.set_title('Highest-Rated Buildings')
+
+    plt.tight_layout()
+    plt.show()
+
+    return [highest_category, highest_building]
+
     pass
 
 #Try calling your functions here
 def main():
     load_rest_data('South_U_Restaurants.db')
-
+    plot_rest_categories('South_U_Restaurants.db')
+    find_rest_in_building('1101', 'South_U_Restaurants.db')
+    get_highest_rating('South_U_Restaurants.db')
     pass
 
 class TestHW8(unittest.TestCase):
